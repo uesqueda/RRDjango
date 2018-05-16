@@ -92,6 +92,15 @@ def signup(request):
 def get_profile(request):
     return render(request, 'profile.html')
 
+def get_accountpage(request):
+    accountId = request.GET.get('id')
+    accountList = user.objects.raw('SELECT * FROM auth_user WHERE id = %s', [accountId])
+    return render(request, 'accountpage.html', {'account': accountList[0]})
+	
+def get_account(request):
+    accounts = User.objects.raw('select id,username,date_joined from auth_user ')
+    return render(request, 'account.html', {'accounts': accounts})
+
 
 def get_signuppage(request):
     return render(request, 'signup.html')
