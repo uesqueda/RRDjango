@@ -224,8 +224,24 @@ def signup(request):
 
 
 def get_profile(request):
-    userId = request.GET.get('id')
+    userId = request.user.id
+    fuserID = request.GET.get('id')
+    followedUser = Users.objects.raw(id = fuserID)
+    userList = Users.objects.raw('SELECT * from auth_user where id = %s', [followedUser])
     user = Users.objects.raw('SELECT * FROM auth_user WHERE id = %s', [userId])
+
+    if 'edit' in request.POST:
+        firstname = request.POST.get("firstName", None)
+        lastname = request.POST.get("lastName", None)
+        email = request.POST.get("email", None)
+        birthdate = request.POST.get("birthDate", None)
+        bio = request.POST.get("biography", None)
+        #interests = request.POST.get("interest", None)
+        #favcomic = request.POST.get("favComic", None)
+        #favcharac = request.POST.get("favCharac", None)
+        settings = Users.objects.raw(id=userId, first_name = firstname, last_name = lastname, email = email,
+                                     DOB = birthdate, biography = bio)
+        settings.save()
     return render(request, 'profile.html', {'user': user[0]})
 
 
