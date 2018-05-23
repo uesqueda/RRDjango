@@ -259,6 +259,8 @@ def get_profile(request):
         cursor.execute("UPDATE auth_user SET first_name=%s, last_name=%s, email=%s, DOB=%s, biography=%s  WHERE id = %s;"
                        , (firstname, lastname, email, birthdate, bio, userId))
         cursor.close()
+        
+    profile = Users.objects.raw('SELECT * FROM auth_user WHERE id = %s', [profileId])
     return render(request, 'profile.html', {'profile': profile[0], 'following': following})
 
 
