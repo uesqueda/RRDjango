@@ -157,10 +157,11 @@
                         <p>TimeLine items here</p>
                     </div>
                 </div>
-
+		{% if profile.id = request.user.id %}
                 <div id="edit">
                     <form method="POST">{% csrf_token %}<button type="submit" name="editProfile"> Edit Profile</button></form>
                 </div>
+		{% endif %}
 
             </div>
         </div>
