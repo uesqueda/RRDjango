@@ -1,5 +1,5 @@
 $(document).ready(() => {
-  $('.settingsBttn').on('click', () => {
+  $('.editProfile').on('click', () => {
     $('.settingsForm').show();
     $('.Obackground').show();
   })
