@@ -225,12 +225,28 @@ def signup(request):
 
 def get_profile(request):
     userId = request.user.id
-    fuserID = request.GET.get('id')
+    profileId = request.GET.get('id')
+    
     followedUser = Users.objects.raw(id = fuserID)
     userList = Users.objects.raw('SELECT * from auth_user where id = %s', [followedUser])
     user = Users.objects.raw('SELECT * FROM auth_user WHERE id = %s', [userId])
-
-    if 'edit' in request.POST:
+    
+    following = True
+    try:
+        UserFollowings.object.get(UserID=userId, FollowedUserID = profileId)
+        if 'unfollow' in request.POST:
+            cursor = connection.cursor()
+            cursor.execute("DELETE FROM website_userfollowings WHERE UserID = %s AND FollowedUserID = %s;",
+                          (userId, profileId))
+            cursor.close()
+    except: 
+        following = False
+        if 'follow' in request.POST: 
+            UserFollowings.objects.create(UserID = userId, FollowedUserID = profileId)
+            
+    if 'message' in request.POST:
+        pass
+    if 'editProfile' in request.POST:
         firstname = request.POST.get("firstName", None)
         lastname = request.POST.get("lastName", None)
         email = request.POST.get("email", None)
@@ -239,10 +255,11 @@ def get_profile(request):
         #interests = request.POST.get("interest", None)
         #favcomic = request.POST.get("favComic", None)
         #favcharac = request.POST.get("favCharac", None)
-        settings = Users.objects.raw(id=userId, first_name = firstname, last_name = lastname, email = email,
-                                     DOB = birthdate, biography = bio)
-        settings.save()
-    return render(request, 'profile.html', {'user': user[0]})
+        cursor = connection.cursor()
+        cursor.execute("UPDATE auth_user SET first_name=%s, last_name=%s, email=%s, DOB=%s, biography=%s  WHERE id = %s;"
+                       , (firstname, lastname, email, birthdate, bio, userId))
+        cursor.close()
+    return render(request, 'profile.html', {'profile': profile[0], 'following': following})
 
 
 def get_signuppage(request):
